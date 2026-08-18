@@ -31,11 +31,12 @@ FROM alpine:3.23
 
 # gettext fournit envsubst, utilisé par l'entrypoint pour injecter les secrets HF
 # dans le config.json au démarrage (les secrets HF ne sont que des variables d'env).
-RUN apk add --no-cache ca-certificates tzdata curl gettext
+RUN apk add --no-cache ca-certificates tzdata curl gettext python3
 
 COPY --from=builder /src/build/picoclaw /usr/local/bin/picoclaw
 COPY docker/hf-entrypoint.sh /hf-entrypoint.sh
 COPY config/config.hf.template.json /app/config.hf.template.json
+COPY mcp/composio_bridge.py /app/mcp/composio_bridge.py
 RUN chmod +x /hf-entrypoint.sh
 
 ENV HOME=/home/picoclaw \

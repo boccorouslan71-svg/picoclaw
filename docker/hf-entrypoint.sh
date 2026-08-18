@@ -31,6 +31,10 @@ fi
 # Valeur de repli pour que le template reste du JSON valide même si la variable
 # n'est pas définie (allow_from vide = aucun filtre d'utilisateur).
 : "${TELEGRAM_ALLOWED_USER_ID:=}"
+# Identifiant Composio par defaut : les comptes deja connectes sont rattaches a
+# cet utilisateur; le pont MCP local en a besoin pour retrouver ses connexions.
+: "${COMPOSIO_USER_ID:=rouslan}"
+export COMPOSIO_USER_ID
 export TELEGRAM_ALLOWED_USER_ID
 
 # Ne jamais écraser un config.json déjà présent ET modifié à la main

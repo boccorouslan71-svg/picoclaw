@@ -51,6 +51,19 @@
           "headers": {
             "x-api-key": "${COMPOSIO_API_KEY}"
           }
+        },
+        "composio_bridge": {
+          "enabled": true,
+          "type": "stdio",
+          "command": "python3",
+          "args": [
+            "/app/mcp/composio_bridge.py"
+          ],
+          "env": {
+            "COMPOSIO_API_KEY": "${COMPOSIO_API_KEY}",
+            "COMPOSIO_USER_ID": "${COMPOSIO_USER_ID}"
+          },
+          "deferred": false
         }
       }
     }
