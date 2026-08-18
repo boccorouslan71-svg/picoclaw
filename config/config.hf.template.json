@@ -45,7 +45,7 @@
       },
       "servers": {
         "composio": {
-          "enabled": true,
+          "enabled": false,
           "type": "streamable-http",
           "url": "${COMPOSIO_MCP_URL}",
           "headers": {
