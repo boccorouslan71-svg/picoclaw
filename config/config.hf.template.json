@@ -66,6 +66,12 @@
           "deferred": false
         }
       }
+    },
+    "cron": {
+      "enabled": true,
+      "exec_timeout_minutes": 5,
+      "allow_command": false,
+      "command_allowed_remotes": []
     }
   },
   "channel_list": {
