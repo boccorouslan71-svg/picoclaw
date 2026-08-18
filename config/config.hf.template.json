@@ -32,6 +32,29 @@
       "api_base": "https://apihub.agnes-ai.com/v1"
     }
   ],
+  "tools": {
+    "mcp": {
+      "enabled": true,
+      "max_inline_text_chars": 16384,
+      "discovery": {
+        "enabled": true,
+        "ttl": 30,
+        "max_search_results": 8,
+        "use_bm25": true,
+        "use_regex": false
+      },
+      "servers": {
+        "composio": {
+          "enabled": true,
+          "type": "streamable-http",
+          "url": "${COMPOSIO_MCP_URL}",
+          "headers": {
+            "x-api-key": "${COMPOSIO_API_KEY}"
+          }
+        }
+      }
+    }
+  },
   "channel_list": {
     "telegram": {
       "enabled": true,
