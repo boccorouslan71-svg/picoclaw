@@ -5,6 +5,8 @@
 build/
 .picoclaw/
 config/
+# Exception : le template de deploiement doit entrer dans l'image (COPY dans le Dockerfile).
+!config/config.hf.template.json
 .env
 .env.example
 *.md
