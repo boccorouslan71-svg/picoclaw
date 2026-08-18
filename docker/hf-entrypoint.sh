@@ -84,5 +84,19 @@ else
     echo "[hf-entrypoint] reveil actif desactive (ni PICOCLAW_KEEPALIVE_URL ni RENDER_EXTERNAL_URL)."
 fi
 
+# ------------------------------------------------------------
+# Persistance externe de l'etat (offre gratuite = disque ephemere).
+# Le depot GitHub prive sert de disque : on restaure AVANT de demarrer la
+# gateway (pour que le cron charge ses taches), puis un demon republie a
+# chaque changement. Sans GITHUB_TOKEN/PICOCLAW_STATE_REPO, rien ne change.
+# ------------------------------------------------------------
+if [ -n "${GITHUB_TOKEN}" ] && [ -n "${PICOCLAW_STATE_REPO}" ]; then
+    python3 -u /app/docker/state_sync.py --restore || \
+        echo "[hf-entrypoint] restauration d'etat en echec — demarrage quand meme." >&2
+    python3 -u /app/docker/state_sync.py --watch 2>&1 &
+else
+    echo "[hf-entrypoint] persistance d'etat inactive (GITHUB_TOKEN / PICOCLAW_STATE_REPO absents)."
+fi
+
 echo "[hf-entrypoint] démarrage : picoclaw gateway sur ${PICOCLAW_GATEWAY_HOST}:${PICOCLAW_GATEWAY_PORT}"
 exec picoclaw gateway "$@"

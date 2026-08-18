@@ -37,6 +37,7 @@ COPY --from=builder /src/build/picoclaw /usr/local/bin/picoclaw
 COPY docker/hf-entrypoint.sh /hf-entrypoint.sh
 COPY config/config.hf.template.json /app/config.hf.template.json
 COPY mcp/composio_bridge.py /app/mcp/composio_bridge.py
+COPY docker/state_sync.py /app/docker/state_sync.py
 RUN chmod +x /hf-entrypoint.sh
 
 ENV HOME=/home/picoclaw \
