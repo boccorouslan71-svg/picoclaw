@@ -244,7 +244,15 @@ def t_connect_app(toolkit_slug):
                 f"Réponse : {json.dumps(data, ensure_ascii=False)[:400]}")
     note = " (nouvelle configuration créée)" if created else ""
     return (f"Lien d'autorisation pour {toolkit}{note} :\n{link}\n\n"
-            "Ouvrir ce lien, autoriser l'accès, puis réessayer l'action souhaitée.")
+            "RÈGLE DE TRANSMISSION, à respecter mot pour mot dans la réponse à "
+            "l'utilisateur : recopier l'URL ci-dessus telle quelle, seule sur sa "
+            "propre ligne, sans gras, sans astérisques, sans backticks, sans "
+            "crochets Markdown et sans ponctuation collée avant ou après. Tout "
+            "caractère ajouté à l'URL est interprété comme faisant partie du jeton, "
+            "et Composio rejette alors la page d'autorisation.\n"
+            "Préciser aussi que le lien n'est valable qu'environ dix minutes et "
+            "qu'il faut l'ouvrir immédiatement, autoriser l'accès, puis réessayer "
+            "l'action souhaitée.")
 
 
 def t_list_connections():
@@ -307,7 +315,9 @@ TOOLS = [
         "name": "composio_connect_app",
         "description": ("Génère le lien d'autorisation d'une application Composio et le renvoie à "
                         "l'utilisateur. À utiliser quand une exécution échoue faute de compte connecté, "
-                        "ou quand l'utilisateur demande à connecter une application."),
+                        "ou quand l'utilisateur demande à connecter une application. Le lien renvoyé "
+                        "doit être recopié nu, seul sur sa ligne, sans gras ni astérisques ni backticks : "
+                        "un caractère collé à l'URL invalide le jeton d'autorisation."),
         "inputSchema": {
             "type": "object",
             "properties": {"toolkit_slug": {"type": "string", "description": "Ex. « notion », « slack »."}},
