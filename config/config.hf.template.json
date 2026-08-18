@@ -39,7 +39,7 @@
       "discovery": {
         "enabled": true,
         "ttl": 30,
-        "max_search_results": 8,
+        "max_search_results": 20,
         "use_bm25": true,
         "use_regex": false
       },
