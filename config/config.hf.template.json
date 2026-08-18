@@ -1,9 +1,8 @@
 {
-  "_comment": "Template rendu au runtime par docker/hf-entrypoint.sh via envsubst. Les ${...} sont des secrets Hugging Face. Ne jamais committer de clé en clair ici.",
   "version": 3,
   "agents": {
     "defaults": {
-      "workspace": "/data/.picoclaw/workspace",
+      "workspace": "${PICOCLAW_WORKSPACE}",
       "restrict_to_workspace": true,
       "model_name": "agnes-flash",
       "max_tokens": 8192,
@@ -17,16 +16,19 @@
   },
   "model_list": [
     {
-      "_comment": "Agnès AI est OpenAI-compatible (vérifié : GET /v1/models et POST /v1/chat/completions, auth Bearer, tool_calls et stream SSE fonctionnels). Le préfixe 'litellm/' réutilise le provider openai_compat existant de PicoClaw — chemin intérimaire tant que le protocole natif 'agnes' n'est pas mergé (Lot C).",
       "model_name": "agnes-flash",
       "model": "litellm/agnes-2.5-flash",
-      "api_keys": ["${AGNES_API_KEY}"],
+      "api_keys": [
+        "${AGNES_API_KEY}"
+      ],
       "api_base": "https://apihub.agnes-ai.com/v1"
     },
     {
       "model_name": "agnes-pro",
       "model": "litellm/agnes-2.5-pro",
-      "api_keys": ["${AGNES_API_KEY}"],
+      "api_keys": [
+        "${AGNES_API_KEY}"
+      ],
       "api_base": "https://apihub.agnes-ai.com/v1"
     }
   ],
@@ -34,7 +36,9 @@
     "telegram": {
       "enabled": true,
       "type": "telegram",
-      "allow_from": ["${TELEGRAM_ALLOWED_USER_ID}"],
+      "allow_from": [
+        "${TELEGRAM_ALLOWED_USER_ID}"
+      ],
       "reasoning_channel_id": "",
       "settings": {
         "token": "${TELEGRAM_BOT_TOKEN}",

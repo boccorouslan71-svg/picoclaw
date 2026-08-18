@@ -52,9 +52,10 @@ USER 1000
 # sortie de veille du Space — voir docs/GETTING_STARTED.md § Limitations.
 VOLUME ["/data"]
 
+# HF impose 7860 ; Render fournit $PORT au runtime (voir hf-entrypoint.sh).
 EXPOSE 7860
 
 HEALTHCHECK --interval=60s --timeout=5s --start-period=20s --retries=3 \
-  CMD curl -fsS http://localhost:7860/health || exit 1
+  CMD curl -fsS "http://localhost:${PORT:-${PICOCLAW_GATEWAY_PORT:-7860}}/health" || exit 1
 
 ENTRYPOINT ["/hf-entrypoint.sh"]
