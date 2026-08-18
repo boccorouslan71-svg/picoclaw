@@ -283,34 +283,69 @@ def t_connect_app(toolkit_slug):
             "l'action souhaitée.")
 
 
-def t_list_toolkits(query=None, limit=30):
-    """Liste les applications du catalogue Composio (1223 au total)."""
-    limit = max(1, min(int(limit or 30), 100))
+_CATALOG_TOTALS = {}
+
+
+def _catalog_totals():
+    """Totaux globaux du catalogue Composio, mesures une fois par process."""
+    if not _CATALOG_TOTALS:
+        try:
+            apps = api("GET", "/toolkits", query={"limit": 1}).get("total_items")
+            tools = api("GET", "/tools", query={"limit": 1}).get("total_items")
+            _CATALOG_TOTALS["apps"] = apps
+            _CATALOG_TOTALS["tools"] = tools
+        except ApiError as exc:
+            log(f"totaux du catalogue indisponibles : {exc}")
+            _CATALOG_TOTALS["apps"] = None
+            _CATALOG_TOTALS["tools"] = None
+    return _CATALOG_TOTALS.get("apps"), _CATALOG_TOTALS.get("tools")
+
+
+def t_list_toolkits(query=None, limit=50):
+    """Liste les applications du catalogue Composio."""
+    limit = max(1, min(int(limit or 50), 200))
     term = (query or "").strip()
-    normalized, changed = _normalize_query(term) if term else ("", False)
-    attempts = [term] if term else [None]
-    if changed and normalized and normalized not in attempts:
-        attempts.append(normalized)
-    items, total = [], None
+    attempts = [term or None]
+    if term:
+        normalized, changed = _normalize_query(term)
+        if changed and normalized and normalized not in attempts:
+            attempts.append(normalized)
+    items, matches = [], None
     for t in attempts:
         data = api("GET", "/toolkits", query={"search": t or None, "limit": limit})
         items = data.get("items") or []
-        total = data.get("total_items")
+        matches = data.get("total_items")
         if items:
             break
+    total_apps, total_tools = _catalog_totals()
+    catalog = ""
+    if total_apps:
+        catalog = f"Catalogue Composio complet : {total_apps} applications"
+        if total_tools:
+            catalog += f" et {total_tools} outils"
+        catalog += ", tous accessibles a la demande."
     if not items:
-        return (f"Aucune application trouvee pour « {query} ». Reessayer avec un mot-cle anglais "
-                "ou appeler composio_list_toolkits sans argument pour un echantillon du catalogue.")
-    head = f"{len(items)} application(s) affichee(s)"
-    if total:
-        head += f" sur {total} disponibles dans le catalogue Composio"
+        return (f"Aucune application ne correspond a « {query} ». Reessayer avec un mot-cle anglais, "
+                "ou appeler composio_list_toolkits sans argument pour parcourir le catalogue.\n" + catalog)
+    if term:
+        head = f"{matches or len(items)} application(s) correspondent a « {term} »"
+        if matches and matches > len(items):
+            head += f" ; {len(items)} affichee(s) ci-dessous"
+    else:
+        head = f"{len(items)} application(s) affichee(s)"
+        if total_apps:
+            head += f" sur {total_apps}"
     lines = [head + " :"]
     for it in items:
         meta = it.get("meta") or {}
         lines.append(f"- {it.get('slug','?')} ({it.get('name','?')}) : "
                      f"{meta.get('tools_count','?')} outils")
-    lines.append("\nUtiliser composio_search_tools (avec toolkit_slug) pour lister les outils "
-                 "d'une application, puis composio_connect_app si aucun compte n'est encore relie.")
+    if catalog:
+        lines.append("\n" + catalog)
+    lines.append("Un filtre ne restreint que l'affichage, jamais le catalogue : ne jamais presenter "
+                 "le nombre de correspondances comme le nombre total d'applications disponibles.")
+    lines.append("Utiliser composio_search_tools (avec toolkit_slug) pour les outils d'une application, "
+                 "puis composio_connect_app si aucun compte n'est relie.")
     return "\n".join(lines)
 
 
@@ -386,18 +421,19 @@ TOOLS = [
     },
     {
         "name": "composio_list_toolkits",
-        "description": ("Liste les applications disponibles dans le catalogue Composio (1223 au total, "
-                        "avec le nombre d'outils de chacune). À utiliser pour répondre à « quelles "
+        "description": ("Liste les applications disponibles dans le catalogue Composio (1223 applications, "
+                        "25 559 outils au total) avec le nombre d'outils de chacune, et rappelle ces "
+                        "totaux globaux. À utiliser pour répondre à « quelles "
                         "applications / quels outils sont disponibles » : ne jamais répondre de mémoire, "
                         "ni se limiter aux outils déjà chargés."),
         "inputSchema": {
             "type": "object",
             "properties": {
                 "query": {"type": "string", "description": "Filtre optionnel (ex. « crm », « email », « notion »)."},
-                "limit": {"type": "integer", "description": "Nombre d'applications (1-100, défaut 30)."},
+                "limit": {"type": "integer", "description": "Nombre d'applications à afficher (1-200, défaut 50)."},
             },
         },
-        "fn": lambda a: t_list_toolkits(a.get("query"), a.get("limit", 30)),
+        "fn": lambda a: t_list_toolkits(a.get("query"), a.get("limit", 50)),
     },
     {
         "name": "composio_list_connections",

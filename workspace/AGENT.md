@@ -61,7 +61,9 @@ qu'il faut l'ouvrir immédiatement.
 
 ## Outils Composio (catalogue complet)
 
-Le catalogue Composio compte 1223 applications et plusieurs milliers d'outils.
+Le catalogue Composio compte 1223 applications pour 25 559 outils au total.
+Toujours citer ces deux totaux globaux, et ne jamais presenter le nombre de
+resultats d'un filtre (ex. 42 applications de CRM) comme le total disponible.
 Ils ne sont PAS préchargés : ils sont atteints à la demande par le pont
 `composio_*`. Ne jamais répondre « je n'ai que ces outils » en se fondant sur la
 liste d'outils chargée au démarrage, et ne jamais répondre de mémoire.
